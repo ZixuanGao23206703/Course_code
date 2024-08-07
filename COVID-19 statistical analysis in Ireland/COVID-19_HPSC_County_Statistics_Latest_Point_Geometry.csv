@@ -1,0 +1,41 @@
+﻿ORIGID: Original Identifier - a unique code or number assigned to each data entry.,,,,,,,,,,,,,,,
+CountyName: The name of the county.,,,,,,,,,,,,,,,
+PopulationCensus16: The population of the county as recorded in the 2016 census.人口数量,,,,,,,,,,,,,,,
+"IGEasting and IGNorthing: Coordinates in the Irish Grid Reference System (IGRS), used for mapping in Ireland.网格参考系统",,,,,,,,,,,,,,,
+Lat and Long: Latitude and Longitude - geographic coordinates indicating the location.纬度和经度,,,,,,,,,,,,,,,
+UniqueGeographicIdentifier: A unique identifier for geographic locations.地理位置的唯一标识符,,,,,,,,,,,,,,,
+ConfirmedCovidCases: The number of confirmed COVID-19 cases in the area. 该地区确认的COVID-19病例数,,,,,,,,,,,,,,,
+PopulationProportionCovidCases: The proportion of the population that has been confirmed with COVID-19.已确认感染COVID-19的人口比例,,,,,,,,,,,,,,,
+ConfirmedCovidDeaths: The number of confirmed deaths due to COVID-19 in the area.确认的COVID-19死亡病例数,,,,,,,,,,,,,,,
+ConfirmedCovidRecovered: The number of people who have recovered from COVID-19.已从COVID-19中恢复的人数,,,,,,,,,,,,,,,
+"x and y: Typically, these represent coordinate points in a spatial dataset, though their specific meaning would depend on the context of this table.",,,,,,,,,,,,,,,
+FID: Feature Identifier - often used in geographic information systems (GIS) to uniquely identify features.,,,,,,,,,,,,,,,
+TimeStampDate: The date and time when the data was recorded or last updated.数据记录或最后更新的日期和时间,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,
+ORIGID,CountyName,PopulationCensus16,IGEasting,IGNorthing,Lat,Long,UniqueGeographicIdentifier,ConfirmedCovidCases,PopulationProportionCovidCases,ConfirmedCovidDeaths,ConfirmedCovidRecovered,x,y,FID,TimeStampDate
+,Carlow,56932,278661,163444,52.7168,-6.8367,http://data.geohive.ie/resource/county/2ae19629-143d-13a3-e055-000000000001,24490,43016.22989,,,-6.8367,52.7168,372503,2023/11/13 00:00:00+00
+,Cavan,76176,246380,304501,53.9878,-7.2937,http://data.geohive.ie/resource/county/2ae19629-1448-13a3-e055-000000000001,27412,35985.08717,,,-7.2937,53.9878,372504,2023/11/13 00:00:00+00
+,Clare,118817,133493,182732,52.8917,-8.9889,http://data.geohive.ie/resource/county/2ae19629-1450-13a3-e055-000000000001,40549,34127.27135,,,-8.9889,52.8917,372505,2023/11/13 00:00:00+00
+,Cork,542868,156242,77860,51.9517,-8.6372,http://data.geohive.ie/resource/county/2ae19629-1451-13a3-e055-000000000001,175960,32413.03595,,,-8.6372,51.9517,372506,2023/11/13 00:00:00+00
+,Donegal,159192,202615,405691,54.8989,-7.96,http://data.geohive.ie/resource/county/2ae19629-1452-13a3-e055-000000000001,62321,39148.32404,,,-7.96,54.8989,372507,2023/11/13 00:00:00+00
+,Dublin,1347359,313762,235813,53.3605,-6.292,http://data.geohive.ie/resource/county/2ae19629-144f-13a3-e055-000000000001,512494,38036.93002,,,-6.292,53.3605,372508,2023/11/13 00:00:00+00
+,Galway,258058,151045,235818,53.3705,-8.7362,http://data.geohive.ie/resource/county/2ae19629-1453-13a3-e055-000000000001,93061,36062.04807,,,-8.7362,53.3705,372509,2023/11/13 00:00:00+00
+,Kerry,147707,92975,102996,52.1689,-9.565,http://data.geohive.ie/resource/county/2ae19629-1454-13a3-e055-000000000001,46949,31785.22345,,,-9.565,52.1689,372510,2023/11/13 00:00:00+00
+,Kildare,222504,281262,221513,53.238,-6.7837,http://data.geohive.ie/resource/county/2ae19629-1455-13a3-e055-000000000001,85501,38426.72491,,,-6.7837,53.238,372511,2023/11/13 00:00:00+00
+,Kilkenny,99232,253094,148060,52.5816,-7.2175,http://data.geohive.ie/resource/county/2ae19629-1456-13a3-e055-000000000001,33514,33773.37955,,,-7.2175,52.5816,372512,2023/11/13 00:00:00+00
+,Laois,84697,244211,193996,52.9952,-7.3423,http://data.geohive.ie/resource/county/2ae19629-143e-13a3-e055-000000000001,30581,36106.3556,,,-7.3423,52.9952,372513,2023/11/13 00:00:00+00
+,Leitrim,32044,200446,319670,54.1261,-7.9939,http://data.geohive.ie/resource/county/2ae19629-143f-13a3-e055-000000000001,10755,33563.22556,,,-7.9939,54.1261,372514,2023/11/13 00:00:00+00
+,Limerick,194899,149743,141780,52.5255,-8.7412,http://data.geohive.ie/resource/county/2ae19629-1440-13a3-e055-000000000001,74276,38109.99543,,,-8.7412,52.5255,372515,2023/11/13 00:00:00+00
+,Longford,40873,220162,275901,53.7325,-7.6952,http://data.geohive.ie/resource/county/2ae19629-1441-13a3-e055-000000000001,15576,38108.28664,,,-7.6952,53.7325,372516,2023/11/13 00:00:00+00
+,Louth,128884,299463,297349,53.9161,-6.487,http://data.geohive.ie/resource/county/2ae19629-1442-13a3-e055-000000000001,54827,42539.80323,,,-6.487,53.9161,372517,2023/11/13 00:00:00+00
+,Mayo,130507,117679,297355,53.9191,-9.2537,http://data.geohive.ie/resource/county/2ae19629-1443-13a3-e055-000000000001,42106,32263.4035,,,-9.2537,53.9191,372518,2023/11/13 00:00:00+00
+,Meath,195044,284946,271349,53.6851,-6.715,http://data.geohive.ie/resource/county/2ae19629-1444-13a3-e055-000000000001,71492,36654.29339,,,-6.715,53.6851,372519,2023/11/13 00:00:00+00
+,Monaghan,61386,268914,326818,54.1857,-6.9452,http://data.geohive.ie/resource/county/2ae19629-1445-13a3-e055-000000000001,23554,38370.31245,,,-6.9452,54.1857,372520,2023/11/13 00:00:00+00
+,Offaly,77961,222690,223679,53.2632,-7.6607,http://data.geohive.ie/resource/county/2ae19629-1446-13a3-e055-000000000001,28335,36345.09562,,,-7.6607,53.2632,372521,2023/11/13 00:00:00+00
+,Roscommon,64544,182029,283486,53.8008,-8.2735,http://data.geohive.ie/resource/county/2ae19629-1447-13a3-e055-000000000001,23198,35941.37333,,,-8.2735,53.8008,372522,2023/11/13 00:00:00+00
+,Sligo,65535,165130,323355,54.1581,-8.5345,http://data.geohive.ie/resource/county/2ae19629-1449-13a3-e055-000000000001,21934,33469.13863,,,-8.5345,54.1581,372523,2023/11/13 00:00:00+00
+,Tipperary,159553,205427,154345,52.6407,-7.9206,http://data.geohive.ie/resource/county/2ae19629-144a-13a3-e055-000000000001,55240,34621.72444,,,-7.9206,52.6407,372524,2023/11/13 00:00:00+00
+,Waterford,116176,234676,105809,52.2035,-7.4935,http://data.geohive.ie/resource/county/2ae19629-144b-13a3-e055-000000000001,43556,37491.39237,,,-7.4935,52.2035,372525,2023/11/13 00:00:00+00
+,Westmeath,88770,238362,255966,53.5524,-7.4219,http://data.geohive.ie/resource/county/2ae19629-144c-13a3-e055-000000000001,35220,39675.56607,,,-7.4219,53.5524,372526,2023/11/13 00:00:00+00
+,Wexford,149722,301627,141559,52.5164,-6.5037,http://data.geohive.ie/resource/county/2ae19629-144d-13a3-e055-000000000001,47283,31580.52925,,,-6.5037,52.5164,372527,2023/11/13 00:00:00+00
+,Wicklow,142425,311162,197894,53.0205,-6.3442,http://data.geohive.ie/resource/county/2ae19629-144e-13a3-e055-000000000001,44840,31483.23679,,,-6.3442,53.0205,372528,2023/11/13 00:00:00+00

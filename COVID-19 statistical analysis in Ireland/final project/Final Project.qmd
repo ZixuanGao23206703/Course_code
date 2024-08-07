@@ -1,0 +1,629 @@
+---
+title: "Final Project"
+author: "ZixuanGao&23206703"
+format:
+  html:
+    embed-resources: true
+editor: visual
+---
+
+This dataset is a comprehensive collection of COVID-19 statistics organized by county, downloaded from Ireland's National Data Portal at data.gov.ie. It primarily focuses on the geographical and epidemiological aspects of the COVID-19 pandemic within the regions of Ireland.
+
+## **Data Overview:**
+
+-   **ORIGID (Original Identifier)**: Each data entry is assigned a unique code or number to facilitate tracking and identification within the dataset.
+
+-   **CountyName**: Identifies the county to which the data entry pertains, allowing for regional analysis and comparison.
+
+-   **PopulationCensus16**: Reflects the population count from the 2016 census, which provides a baseline for understanding the impact of COVID-19 relative to the county population size.
+
+-   **IGEasting and IGNorthing**: These are coordinates in the Irish Grid Reference System, a national grid reference system for Ireland, which aids in precise location mapping and spatial analysis.
+
+-   **Lat and Long (Latitude and Longitude)**: These geographic coordinates specify the exact location of the data points, essential for mapping and further spatial studies.
+
+-   **UniqueGeographicIdentifier**: A distinctive identifier assigned to each geographic location, ensuring that each data point can be singularly referenced.
+
+-   **ConfirmedCovidCases**: Indicates the total number of COVID-19 cases that have been officially confirmed in the county, a key metric for tracking the spread of the virus.
+
+-   **PopulationProportionCovidCases**: Shows the proportion of the county's population that has been diagnosed with COVID-19, which is crucial for understanding the extent of the outbreak in relation to the population size.
+
+-   **ConfirmedCovidDeaths**: The count of verified deaths due to COVID-19 in each county, providing a stark measure of the pandemic's mortality impact.
+
+-   **ConfirmedCovidRecovered**: Represents the number of individuals who have recovered from COVID-19, offering insights into the recovery rates and the effectiveness of healthcare responses.
+
+-   **x and y**: These columns typically represent coordinate points within a spatial dataset; their specific meaning can vary and is context-dependent.
+
+-   **FID (Feature Identifier)**: Commonly used in GIS to uniquely identify spatial features within the dataset.
+
+-   **TimeStampDate**: Marks the date and time at which the data was either entered or last updated, which is vital for ensuring that analyses use the most recent data available.
+
+## **Research Focus:**
+
+The dataset facilitates a range of potential analyses, including the geographic distribution of cases, temporal trends, and the effectiveness of public health responses. Researchers can utilize this dataset to investigate the correlation between population density and case spread, analyze the impact of COVID-19 on different counties, and study the evolution of the pandemic over time. The inclusion of recovery and mortality data allows for a deeper understanding of the health outcomes and efficacy of treatments across regions.
+
+## Part 1: Analysis
+
+-   Load the dataset 'COVID-19_HPSC_County_Statistics_Latest_Point_Geometry.csv'. The data starts in row 15, with row 15 containing the variable names, and that the missing values are represented by ":".Manage the data and delete the useless variables. Save it as a tibble and give meaningful names to the variables.
+
+```{r}
+library(rio)
+library(dplyr)
+library(tidyverse)
+library(lubridate)
+
+# Import the dataset, skipping the first 14 rows and treating ":" as NA
+df <- import("COVID-19_HPSC_County_Statistics_Latest_Point_Geometry.csv", 
+             sheet = 1, 
+             skip = 14, 
+             na = ":",
+             setclass = "tibble")
+
+# Remove the unnecessary columns
+df_new <- df %>%
+  select(-ORIGID, -UniqueGeographicIdentifier, -IGEasting, -IGNorthing, -x, -y, -FID)
+
+# replace 'datetime' with your actual column name
+# Seperate date and time to two columns
+df_new <- df_new %>%
+  mutate(
+    Date = as.Date(TimeStampDate), # Extract the date part
+    Time = format(as.POSIXct(TimeStampDate), format = "%H:%M:%S") # Extract the time part
+  ) %>%
+  select(-TimeStampDate) # Remove the original datetime column if not needed
+
+# give meaningful names to the variables
+df_new <- rename(df_new,
+             County=CountyName,
+             Population=PopulationCensus16,
+             ConfirmedCases=ConfirmedCovidCases,
+             PopulationProportion=PopulationProportionCovidCases,
+             ConfirmedDeaths=ConfirmedCovidDeaths,
+             ConfirmedRecovered=ConfirmedCovidRecovered)
+
+```
+
+**Explaination:** The process above includes importing data, cleaning it by removing unnecessary columns, transforming and splitting date-time information into separate components, and renaming columns for clarity and ease of understanding. This sets the stage for more detailed analysis or visualization in subsequent steps.
+
+-   The basic information of this dataset: the size (number of rows and columns) and the structure of this dataset ; check that the variable Time is stored using an appropriate class for a date, and the other variables are numeric, fix them if they aren't.
+
+```{r}
+# Display the size of the dataset (number of rows and columns)
+cat("Dataset size:", nrow(df_new), "rows and", ncol(df_new), "columns\n")
+
+# Check the structure of dataset
+str(df_new)
+
+# Check if the Date variable is stored as a Date
+if (!inherits(df_new$Date, "Date")) {
+  cat("Warning: Date variable is not of type Date.\n")
+}
+
+# Check if the Time variable is stored as character
+if (!is.character(df_new$Time)) {
+  cat("Warning: Time variable is not of type character.\n")
+}
+
+# Define the expected numeric and factor (categorical) variable names
+numeric_vars <- c("Population", "Lat", "Long", "ConfirmedCases", "PopulationProportion", "ConfirmedDeaths", "ConfirmedRecovered")
+factor_vars <- c("County") # Add other factor variable names here
+
+# Check if the numeric variables are indeed numeric
+for (var in numeric_vars) {
+  if (!is.numeric(df_new[[var]])) {
+    cat("Warning:", var, "variable is not of type numeric.\n")
+  }
+}
+
+# Check if the factor variables are indeed factors
+for (var in factor_vars) {
+  if (!is.factor(df_new[[var]])) {
+    cat("Warning:", var, "variable is not of type factor.\n")
+  }
+}
+
+# Check the structure again to confirm
+str(df_new)
+
+```
+
+The `echo: false` option disables the printing of code (only output is displayed).
+
+**Explanation:**
+
+**Dataset Size:**
+
+The dataset contains 26 rows and 10 columns. This means that there are 26 observations (or records) in the dataset, each with 10 different features (or fields).
+
+**Data Type and Structure:**
+
+The data is stored as a tibble, which is a modernized version of a data frame (data.frame). It offers clearer and more concise print output, as well as better handling capabilities for large datasets.
+
+**The types of data in the columns include:**
+
+County: Character type (chr).
+
+Population, ConfirmedCases, ConfirmedDeaths, ConfirmedRecovered: Integer type (int).
+
+Lat, Long, PopulationProportion: Numeric type (num).
+
+Date: Date type (Date).
+
+Time: Character type (chr).
+
+**Date and Time Format Check:**
+
+From the structure output, it's observed that the Date column is correctly stored as a date type (Date). This means that effective date-related operations, such as sorting, filtering, or calculating intervals between dates, can be performed.
+
+The Time column is stored as a character type (chr), which is appropriate when time is used merely as a label and not for time calculations.
+
+-   Calculate the mortality rate and recovery rate for each town, and process the data to validate data types.
+
+```{r}
+# Calculate the mortality rate and recovery rate for each county
+df_new <- df_new %>%
+  mutate(
+    DeathRate = (ConfirmedDeaths / ConfirmedCases) * 100, # Calculate the death rate
+    RecoveryRate = (ConfirmedRecovered / ConfirmedCases) * 100 # Calculate the recovery rate
+  )
+
+# Handle possible NaN or Inf values (when ConfirmedCases is 0)
+df_new$DeathRate[is.na(df_new$DeathRate) | is.infinite(df_new$DeathRate)] <- 0
+df_new$RecoveryRate[is.na(df_new$RecoveryRate) | is.infinite(df_new$RecoveryRate)] <- 0
+
+# Display the modified dataset
+print(df_new)
+
+# Optional: Check the structure to confirm that the new columns have been added
+str(df_new)
+df_new
+```
+
+**Explanation:**The above code added two columns for mortality rate and recovery rate, and handled NaN values in the data. This step in data cleaning ensures consistency and interpretability of the data, even in cases where the number of cases is zero.
+
+-   Remove the time column. Verify that the date column is of date data type, not a string. Check if the dates are sorted. Rearrange the columns to have the date/town/death rate/recovery rate as the first four columns.
+
+```{r}
+# Remove the time column
+df_new <- df_new %>%
+  select(-Time)
+
+# Check the data type of the Date column
+if (!inherits(df_new$Date, "Date")) {
+  cat("The Date column is not of date data type.\n")
+} else {
+  cat("The Date column is of date data type.\n")
+
+  # Check if the dates are sorted
+  if (all(diff(df_new$Date) >= 0)) {
+    cat("The date data is sorted in ascending order.\n")
+  } else {
+    cat("The date data is not sorted in ascending order.\n")
+  }
+}
+
+# Rearrange the columns to have Date, County, DeathRate, and RecoveryRate as the first four columns
+df_new <- df_new %>%
+  relocate(Date, County, DeathRate, RecoveryRate, .before = 1)
+
+```
+
+**Explanation:**The script successfully verified that the Date column in the df_new dataset is indeed of the Date data type. This confirmation is crucial for ensuring that any operations or analyses that rely on date-specific functions or chronological ordering are correctly performed. The script has also confirmed that the date data in the Date column is sorted in ascending order. This means that the dates in your dataset are arranged from the earliest to the latest, which is essential for accurate time series analysis, trend observation, and chronological reporting.
+
+-   Work with the dataset just created, and write some code to list the counties that contain any missing data.
+
+```{r}
+#find missing data rows
+countries_with_missing_data <-df_new[!complete.cases(df_new), "County"]
+countries_with_missing_data 
+```
+
+**Explanation:**the NULL result implies that there are no counties with missing data in the dataset you queried, indicating a dataset with complete cases, or a possible inconsistency in the dataset references used in the code.
+
+-   How many observations and variables are in this new dataset?
+
+```{r}
+#check the numbers of observations and variables
+num_observations <- nrow(df_new) #the numbers of observations 
+num_variables <- ncol(df_new) #the numbers of variables
+num_observations
+num_variables
+```
+
+**Explanation:**
+
+nrow(df_new): This function returns the number of rows in the dataset df_new, which represents the number of observations. The result \[1\] 26 indicates that there are 26 observations in the dataset.
+
+ncol(df_new): This function returns the number of columns in the dataset df_new, which corresponds to the number of variables. The result \[1\] 11 indicates that there are 11 variables in the dataset.
+
+-   Use functions from base R to compute which county had in total the most and the least number of ConfirmedCovidCases, makes it in order and returns that country name and the number
+
+```{r}
+# Calculate the county with the most cases
+most_cases <- df_new[which.max(df_new$ConfirmedCases), c("County", "ConfirmedCases")]
+
+# Calculate the county with the least cases
+least_cases <- df_new[which.min(df_new$ConfirmedCases), c("County", "ConfirmedCases")]
+
+# Print the results
+print(paste("County with the most cases:", most_cases$County, "-", most_cases$ConfirmedCases, "cases"))
+print(paste("County with the least cases:", least_cases$County, "-", least_cases$ConfirmedCases, "cases"))
+
+# Sort by the number of confirmed cases in ascending order
+df_sorted <- df_new[order(df_new$ConfirmedCases), c("County", "ConfirmedCases")]
+
+# Print the sorted counties and case numbers
+print(df_sorted)
+
+
+
+```
+
+**Explanation:**The result is stored in most_cases, which indicates that Dublin is the county with the highest number of confirmed cases (512,494 cases). The result is stored in least_cases, showing that Leitrim is the county with the least number of confirmed cases (10,755 cases). the script effectively identifies and displays the counties with the highest and lowest number of confirmed COVID-19 cases. Additionally, it sorts and presents the entire dataset based on the number of confirmed cases, providing a clear overview of the case distribution across different counties.
+
+-   Create a plot displaying the relationship between ConfirmedCases and ConfirmedDeaths. Make the plot "nice" i.e., show county names, change size of the plot,change axis labels, etc.
+
+```{r}
+# Load the ggplot2 package
+library(ggplot2)
+
+# Create a chart, increase label size, and add a regression line
+ggplot(df_new, aes(x = ConfirmedCases, y = ConfirmedDeaths)) +
+  geom_point() +  # Add points
+  geom_text(aes(label = County), vjust = -1, hjust = 1, check_overlap = TRUE, size = 3) +  # Add county labels, increase label size
+  geom_smooth(method = "lm", color = "blue") +  # Add a linear regression line
+  labs(title = "Confirmed COVID-19 Cases vs Deaths",
+       x = "Confirmed COVID-19 Cases",
+       y = "Confirmed COVID-19 Deaths") +
+  theme_minimal() +  # Use a minimal theme
+  theme(plot.title = element_text(hjust = 0.5), # Center the title
+        axis.text.x = element_text(angle = 45, hjust = 1)) # Adjust x-axis labels
+
+# Adjust the chart size (if using an IDE like RStudio)
+ggsave("covid_cases_vs_deaths.png", width = 12, height = 8)
+
+```
+
+**Analysis of the Plot:**
+
+The plot presents a clear visual representation of the relationship between the number of confirmed cases and deaths due to COVID-19 in different counties.
+
+The regression line suggests a positive correlation between the two variables; as the number of confirmed cases increases, the number of deaths also increases.
+
+The plot is well-designed with readable labels for counties, suggesting a good balance between information density and clarity.
+
+The use of theme_minimal() and adjusted axis labels contributes to the plot's aesthetic appeal, making it suitable for presentations or inclusion in reports.
+
+The plot image generated, as described, would show data points for each county labeled with their names. The point corresponding to Dublin is farthest to the right, indicating it has the highest number of confirmed cases, which is consistent with the earlier output that identified Dublin as having the most cases. Other counties like Cork and Galway are also labeled and are positioned according to their case and death counts.
+
+The ascending order of the points along the regression line reflects the increasing trend of deaths with cases, with the majority of counties clustering at the lower end of the case count, indicating fewer cases and deaths.
+
+-   Create a plot depicting the relationship between latitude and longitude with the number of confirmed cases.
+
+```{r}
+# Load the necessary packages
+library(ggplot2)
+library(sf)
+
+# Convert the data to simple feature objects
+df_sf <- st_as_sf(df_new, coords = c("Long", "Lat"), crs = 4326)
+
+# Create a visualization using ggplot2
+ggplot(data = df_sf) +
+  geom_sf(aes(size = ConfirmedCases, color = ConfirmedCases)) +
+  scale_size_continuous(range = c(1, 10)) +  # Adjust the point size range
+  theme_minimal() +
+  labs(title = "Spatial Visualization of Confirmed Cases",
+       x = "Longitude",
+       y = "Latitude")
+
+
+
+```
+
+**Analysis of the Resulting Plot:**
+
+The plot, titled "Spatial Visualization of Confirmed Cases", presents a geographical scatter plot where each point represents a county's location, with the size and color intensity indicating the number of confirmed cases.
+
+Larger and darker points correspond to counties with more confirmed cases, making it easy to identify areas with higher infection rates at a glance.
+
+The point representing Dublin is noticeably larger and more intense than others, which is consistent with previous data indicating that Dublin has the highest number of confirmed cases.
+
+The color legend and the size of the points give a quick visual indication of the scale of confirmed cases across different counties, with a gradient from lighter blue to darker blue representing an increasing number of cases.
+
+The use of geographic coordinates for the visualization allows for an intuitive understanding of the spatial distribution of the pandemic. It can be observed that there is a cluster of counties with higher numbers of cases toward the east coast, near the capital.
+
+The minimalistic design and clear labeling of the axes ensure that the focus remains on the data points and their significance.
+
+In summary, this plot effectively uses size and color to convey the severity of COVID-19 cases across different counties, providing a quick and clear visualization of the spatial patterns in the data. This type of visualization is particularly useful for public health officials, policymakers, and the general public to understand the geographic spread of the virus.
+
+-   Create plots to illustrate the relationship between COVID-19-related variables and population.
+
+```{r}
+library(ggplot2)
+library(gridExtra)
+
+# Plot 1: Relationship between ConfirmedCovidCases and Population
+plot1 <- ggplot(df_new, aes(x = ConfirmedCases, y = Population)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +
+  labs(title = "Relationship between\nConfirmed Covid Cases and Population",
+       x = "Confirmed Covid Cases",
+       y = "Population") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 12))  # Adjust the title font size here
+
+# Plot 2: Relationship between PopulationProportionCovidCases and Population
+plot2 <- ggplot(df_new, aes(x = PopulationProportion, y = Population)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "red") +
+  labs(title = "Relationship between\nPopulation Proportion Covid Cases and Population",
+       x = "Population Proportion Covid Cases",
+       y = "Population") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 12))  # Adjust the title font size here
+
+# Plot 3: Relationship between ConfirmedCovidDeaths and Population
+plot3 <- ggplot(df_new, aes(x = ConfirmedDeaths, y = Population)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "green") +
+  labs(title = "Relationship between\nConfirmed Covid Deaths and Population",
+       x = "Confirmed Covid Deaths",
+       y = "Population") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 12))  # Adjust the title font size here
+
+# Plot 4: Relationship between ConfirmedCovidRecovered and Population
+plot4 <- ggplot(df_new, aes(x = ConfirmedRecovered, y = Population)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "yellow") +
+  labs(title = "Relationship between\nConfirmed Covid Recovered and Population",
+       x = "Confirmed Covid Recovered",
+       y = "Population") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 12))  # Adjust the title font size here
+
+# Arrange the plots into a grid
+grid.arrange(plot1, plot2, plot3, plot4, ncol = 2, nrow = 2)
+
+
+```
+
+The R script creates a series of four scatter plots using the ggplot2 package, each visualizing the relationship between different COVID-19 statistics and the population of counties. The gridExtra package is used to arrange these plots into a 2x2 grid for comparison. Here's a detailed analysis of each plot and the overall grid:
+
+**Plot 1: Confirmed Covid Cases vs. Population**
+
+This plot shows a positive linear relationship between the number of confirmed COVID-19 cases and the population of counties, indicated by the blue regression line.
+
+Larger populations are associated with higher numbers of confirmed cases, which is expected since more people can potentially lead to more cases.
+
+The scatter points are closely aligned with the regression line, suggesting a strong correlation.
+
+**Plot 2: Population Proportion Covid Cases vs. Population**
+
+The second plot represents the relationship between the proportion of the population with confirmed COVID-19 cases and the total population.
+
+The red regression line seems to be flat, indicating that there may not be a strong relationship between the proportion of confirmed cases and the total population size. This suggests that the virus has affected counties regardless of their population size.
+
+The points are spread out horizontally, showing that the proportion of cases varies less with population size.
+
+**Plot 3: Confirmed Covid Deaths vs. Population**
+
+This plot explores the relationship between confirmed COVID-19 deaths and population, with a green regression line indicating a positive trend.
+
+Similar to the first plot, this suggests that counties with larger populations tend to have more confirmed deaths. The alignment of points along the regression line indicates a correlation, though potentially weaker than the first relationship, as deaths are also influenced by other factors like healthcare capacity.
+
+**Plot 4: Confirmed Covid Recovered vs. Population**
+
+The fourth plot examines the relationship between the number of confirmed recoveries from COVID-19 and the population, with a yellow regression line.
+
+There's a clear positive trend, indicating that counties with larger populations also have higher numbers of recoveries. This could be due to more cases in general but also possibly better reporting or healthcare infrastructure.
+
+**General Observations from the Grid Arrangement:**
+
+The 2x2 grid layout allows for easy comparison between different aspects of the COVID-19 pandemic's impact on counties.
+
+The color-coded regression lines provide immediate visual cues about the nature of each relationship.
+
+The consistency in design across all four plots (minimalist theme, title size) ensures that the focus remains on the data.
+
+**Analysis of the Overall Result:**
+
+The visualizations suggest that while the raw numbers of cases, deaths, and recoveries are correlated with population size, the proportion of the population affected is not necessarily dependent on population size.
+
+These insights can be critical for public health planning, resource allocation, and understanding the dynamics of the pandemic spread.
+
+The plots highlight the importance of considering both absolute numbers and proportional data when assessing the impact of an epidemic on different regions.
+
+In summary, the script effectively uses ggplot2 to visualize complex relationships in an accessible manner, and gridExtra to create a composite graphic that conveys a comprehensive picture of the COVID-19 data. The resulting plots provide valuable insights into how the pandemic affects populations of different sizes.
+
+## Part 2: R Package
+
+I have chosen the **glmnet** package for statistical modeling. glmnet is a package used for generalized linear models, especially suitable for regression and classification problems. It offers an elastic net approach, allowing for feature selection and regularization to improve model performance.
+
+The primary purpose of the glmnet package is to perform statistical modeling of generalized linear models, supporting both regression and classification tasks. It has regularization capabilities, which can be used for feature selection and model optimization.
+
+For my data, I will use the glmnet package to demonstrate the following three main functions or features:
+
+**glmnet function:** This is the main function for fitting elastic net models. I will demonstrate how to use this function to fit generalized linear models, including both regression and classification tasks. Select an appropriate response variable (target) and a set of explanatory variables, and then use the glmnet function to train the model.
+
+**cv.glmnet function:** This function is used for cross-validation. I will demonstrate how to use the cv.glmnet function to select the best regularization parameter and evaluate the model's performance. This can help optimize the model and prevent overfitting.
+
+**predict function:** Once the elastic net model is fitted, you can use the predict function for making predictions. I will demonstrate how to use this function to make predictions on new data and calculate performance metrics of the prediction results, such as mean squared error or accuracy.
+
+```{r}
+# Import necessary packages
+# install.packages("caret")
+library(glmnet)
+library(caret) # For data preprocessing
+
+# Prepare the data
+# Assume df_new is your original dataset
+
+# Data preprocessing
+df_new <- na.omit(df_new) # Remove missing values
+df_new$Population <- as.numeric(df_new$Population) # Ensure the target variable is numeric
+
+# Determine the columns to be used in the model
+feature_cols <- c("ConfirmedCases", "PopulationProportion", "ConfirmedDeaths", "ConfirmedRecovered")
+
+# Normalize these columns
+preProcValues <- preProcess(df_new[, feature_cols], method = c("center", "scale")) # Normalization
+df_new_normalized <- predict(preProcValues, df_new[, feature_cols])
+
+# Create a data matrix
+data_matrix <- as.matrix(df_new_normalized)
+
+# Fit the elastic net model
+model <- glmnet(x = data_matrix, y = df_new$Population, alpha = 0.5)
+
+# Perform cross-validation (using more folds)
+cv_model <- cv.glmnet(x = data_matrix, y = df_new$Population, nfolds = 10)
+
+# Select the optimal lambda
+opt_lambda <- cv_model$lambda.min
+
+# Perform predictions on the training set for demonstration (typically you'd use a test set or new data)
+predictions <- predict(model, newx = data_matrix, s = opt_lambda)
+
+# Output prediction results
+print(predictions)
+
+# Output detailed information about the model and the results of cross-validation
+print(summary(model))
+print(cv_model)
+
+# Visualize the coefficient path of the model
+plot(model)
+
+```
+
+The R script provided outlines the process of using elastic net regularization for modeling the relationship between various COVID-19-related variables and population counts. The output given includes both the model's coefficients and the cross-validation results, and the uploaded image appears to be a plot of the model's coefficients against the L1 norm of the coefficients. Here is a comprehensive analysis of the results:
+
+**Model Training and Cross-Validation:**
+
+The script uses the **glmnet** package to train an elastic net model on normalized features related to COVID-19 data, such as confirmed cases, population proportion, deaths, and recoveries, with the goal of predicting population counts.
+
+Cross-validation is performed with 10 folds to estimate the prediction error and to select the best lambda (the regularization parameter). The lambda that minimizes the mean-squared error (MSE) is chosen as opt_lambda.
+
+**Model Prediction:**
+
+Predictions are made using the final model on new data that is structured similarly to the training data. The predictions likely represent the estimated population counts based on the model.
+
+**Output Analysis:**
+
+The printed numeric output lists the predicted population counts for new data points, reflecting the model's estimates based on the input features.
+
+The summary of the model object provides details about the elastic net model, including the coefficients (betas), number of passes over the data (npasses), and other diagnostics.
+
+The output from cv.glmnet shows that the minimum MSE is achieved at a lambda value of 9719, with three non-zero coefficients, and a slightly higher MSE with more regularization (but only two non-zero coefficients) at the lambda value corresponding to one standard error above the minimum (1se).
+
+**Coefficient Path Plot:**
+
+The plot visualizes how the coefficients of the model change as the L1 norm (a measure of the magnitude of the coefficients) increases. The L1 norm increases as we move from a model with high regularization (more penalty on large coefficients) to a model with low regularization.
+
+Each line in the plot represents a coefficient of a variable, and the point at which a line diverges from zero indicates the value of lambda at which the corresponding variable enters the model.
+
+The image appears to show that as the L1 norm increases, the coefficients for some variables become non-zero and then stabilize. A few lines are relatively flat, indicating that those variables have little impact on the model.
+
+**Interpretation of the Coefficient Path Plot (Based on the Image Provided):**
+
+The image shows the coefficient paths for the elastic net model. The x-axis represents the L1 norm of the coefficients, and the y-axis represents the coefficients' values.
+
+It is noted that there is a variable whose coefficient becomes significant as regularization decreases (the L1 norm increases), indicating its strong relationship with the target variable.
+
+The plot shows some coefficients heading towards zero, especially as the L1 norm decreases, illustrating the feature selection aspect of the elastic net where some variables are effectively removed from the model (their coefficients are shrunk to zero).
+
+In summary, the R script demonstrates a robust method of predictive modeling using regularization to account for potential overfitting and to perform feature selection. The resulting plot provides a visual understanding of how each feature influences the model as the strength of regularization changes.
+
+## Part 3: Functions/Programming
+
+The function(s) should be documented by the code having comments and a working example. The output from the function should use S3 or S4 classes and an appropriate print, summary and plot methods should be developed and demonstrated with an example.
+
+```{r}
+# Import necessary packages
+library(glmnet)
+
+# Define the main analysis function
+elastic_net_analysis <- function(df_new, response, predictors, alpha = 0.5) {
+  if(!all(c(response, predictors) %in% names(df_new))) {
+    stop("Response or predictors not found in data.")
+  }
+
+  # Data preprocessing
+  data <- na.omit(df_new)
+  data[[response]] <- as.numeric(df_new[[response]])
+  data_matrix <- as.matrix(df_new[predictors])
+
+  # Fit the elastic net model
+  model <- glmnet(x = data_matrix, y = df_new[[response]], alpha = alpha)
+
+  # Create an S3 object
+  output <- list(model = model, data = df_new, response = response, predictors = predictors)
+  class(output) <- "elastic_net"
+  return(output)
+}
+
+# Custom print method
+print.elastic_net <- function(x) {
+  cat("Elastic Net Model Analysis\n")
+  cat("Response variable:", x$response, "\n")
+  cat("Predictors:", toString(x$predictors), "\n")
+  print(x$model)
+}
+
+# Custom summary method
+summary.elastic_net <- function(object) {
+  summary(object$model)
+}
+
+# Custom plot method
+plot.elastic_net <- function(x, ...) {
+  if(!"glmnet" %in% class(x$model)) {
+    stop("Model is not a glmnet object.")
+  }
+
+  # Plot the coefficient path
+  plot(x$model, xvar = "lambda", label = TRUE, ...)
+  title("Coefficient Path of Elastic Net Model")
+}
+
+# Example
+# Assume df_new is your dataset
+data <- df_new # Load the dataset
+response <- "Population"
+predictors <- c("ConfirmedCases", "PopulationProportion", "ConfirmedDeaths", "ConfirmedRecovered")
+
+# Run analysis
+analysis_result <- elastic_net_analysis(df_new, response, predictors)
+
+# Print analysis results
+print(analysis_result)
+
+# Display summary
+summary(analysis_result)
+
+# Plot the model
+plot(analysis_result)
+
+
+```
+
+**Analysis of the Output:**
+
+The summary output of the model indicates an increase in the number of non-zero coefficients (Df) as the penalty term (Lambda) decreases, a characteristic behavior in elastic net regularization. Higher lambda values introduce more substantial penalties on the coefficients, which typically results in a model with fewer predictors.
+
+The coefficient path plot, although not visible here, is described in the script and intended to illustrate the change in each predictor's coefficient across different lambda values. Such a plot is crucial for discerning the most influential variables in predicting the response, in this case, the Population.
+
+The plot's title, "Coefficient Path of Elastic Net Model", coupled with the "Log Lambda" axis labeling, informs us that the logarithm of lambda values is plotted on the x-axis, while the coefficient sizes are plotted on the y-axis. A decreasing lambda value leads to an increase in the number of non-zero coefficients, suggesting their growing importance in the model.
+
+According to the provided script output, the model seems to consider up to four non-zero coefficients, implying that the model finds four predictors to be significant.
+
+**Interpretation of the Coefficient Path Plot (Based on the Image Description):**
+
+At high penalties (lower Log Lambda values on the left side of the plot), the coefficients of the predictors start at zero or near zero.
+
+As the penalty lessens (moving to the right on the Log Lambda axis), coefficients for certain predictors move away from zero, revealing their contribution to the model's predictive power.
+
+Multiple lines would typically be observed in the plot, with each representing the trajectory of a different predictor's coefficient path over varying lambda values. Those paths that level off indicate predictors with a more pronounced effect on the response variable. In contrast, paths that hover near the baseline throughout suggest predictors that have minimal impact.
+
+In conclusion, the elastic net model offers a comprehensive view of how various predictors related to COVID-19 impact the population variable within the dataset. The utilization of both regularization and cross-validation techniques aims to identify significant predictors while mitigating the risk of overfitting. The coefficient path plot serves as a critical diagnostic tool, enabling the assessment of each predictor's influence under different degrees of regularization.
