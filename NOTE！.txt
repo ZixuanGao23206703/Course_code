@@ -1,0 +1,15 @@
+Apology and Clarification Regarding File Upload Issue
+
+Dear professor,
+
+I hope this message finds you well. I would like to extend my sincere apologies for a recent oversight on my part regarding the file upload for github assignment. Unfortunately, I mistakenly uploaded the files to the 'main' branch instead of my designated subfolder 'Zixuan Gao23206703'.
+
+To provide you with a comprehensive overview of the situation, I have included detailed information in the attached files: 'gitlog_output.txt' and 'gitstatus.txt'. These documents outline the timeline and specifics of both the erroneous upload to 'main' and the subsequent correction in my subfolder.
+
+For your convenience, I have also attached screenshots depicting the initial upload to 'main' and the subsequent upload to my designated subfolder. This should provide a visual representation of the situation.
+
+I have now rectified the error by re-uploading all the required files to the correct location, ensuring that they are readily accessible for your review. To facilitate a better understanding of the upload process, I have included the updated 'gitlog_output_updated.txt' and 'gitstatus_updated.txt' files in this communication.
+
+Once again, I sincerely apologize for any inconvenience this may have caused, and I appreciate your understanding in this matter. Please feel free to reach out if you have any further questions or if additional clarification is needed.
+
+Thank you for your time and consideration.
